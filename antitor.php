@@ -29,7 +29,7 @@ if ( !function_exists( 'add_action' ) ) {
 
 // Generate random filename for the tor ip list
 if ( !get_option("at_filename") ) {
-	update_option("at_filename", sha1(time()).'.list' );
+	update_option("at_filename", sha1(time()) . '.list' );
 }
 
 // Uninstall hook
@@ -70,7 +70,7 @@ function uninstall_antitor() {
 
 function antitor_wp() {
 	// Check if file exists
-	if ( !file_exists(dirname(__FILE__).'/'.ANTITOR_LIST_FILENAME) ){
+	if ( !file_exists(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME) ){
 		// File was not found, update list
 		update_tor_list();
 	} else {
@@ -86,7 +86,7 @@ function antitor_wp() {
 	}
 	$BLOCK = get_option("at_block");
 	// Convert lines of file to array
-	$IPS = @file(dirname(__FILE__).'/'.ANTITOR_LIST_FILENAME, FILE_IGNORE_NEW_LINES);
+	$IPS = @file(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME, FILE_IGNORE_NEW_LINES);
 	// Validate conversion
 	if ( is_array($IPS) ) {
 		// Check if current ip is in list
@@ -96,7 +96,7 @@ function antitor_wp() {
 				if ( !ANTITOR_BLOCKED_COUNT ) {
 					update_option("at_block_count", 1); // Init the block count
 				} else {
-					update_option("at_block_count", ANTITOR_BLOCKED_COUNT+1 ); // Add 1 to count
+					update_option("at_block_count", ANTITOR_BLOCKED_COUNT + 1 ); // Add 1 to count
 				}
 				// TOR USER WAS BLOCKED
 				die( stripslashes( get_option("at_message") ) );
@@ -110,7 +110,7 @@ function update_tor_list() {
 	$list = @file_get_contents( "https://www.dan.me.uk/torlist/" );
 	if ( !strstr($list,'can only') ) { // Validate response
 		// Save new ips list
-		@file_put_contents(dirname(__FILE__).'/'.ANTITOR_LIST_FILENAME, $list);
+		@file_put_contents(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME, $list);
 		// Update timestamp
 		update_option("at_last_updated",time());
 	}
