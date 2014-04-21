@@ -2,16 +2,16 @@
 var $ = jQuery;
 var optionsDiv;
 
-$(init_page); // Document Ready
+$(initPage); // Document Ready
 
-function init_page() {
+function initPage() {
 	// Page load event
 	optionsDiv = $("#hidden-options");
 	// Link click event to handler function
-	$("#at_block").on("click", block_handler_clicked);
+	$("#at_block").on("click", atBlockClickHandler);
 }
 
-function block_handler_clicked(event) {
+function atBlockClickHandler(event) {
 	if ( $(event.currentTarget).is(":checked") ) { // If Checked
 		// Show options
 		optionsDiv.slideDown("fast");

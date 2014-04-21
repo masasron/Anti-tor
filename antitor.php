@@ -27,25 +27,17 @@ if ( !function_exists( 'add_action' ) ) {
 	die('Hi there!  I\'m just a plugin, not much I can do when called directly.');
 }
 
-// Generate random filename for the tor ip list
-if ( !get_option("at_filename") ) {
-	update_option("at_filename", sha1(time()) . '.list' );
-}
-
 // Uninstall hook
 register_uninstall_hook(__FILE__,"uninstall_antitor");
 
 // Defines
 define('ANTITOR_VERSION', '1.0.0');
 define('ANTITOR_PLUGIN_URL', plugin_dir_url( __FILE__ ));
-define('ANTITOR_LAST_UPDATE',get_option("at_last_updated"));
 define('ANTITOR_BLOCKED_COUNT',get_option("at_block_count"));
-define('ANTITOR_LIST_FILENAME',get_option("at_filename"));
-define('ANTITOR_USER_IP', isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1');
 
 //Actions
-add_action('wp', 'antitor_wp'); // Runs before template loads
-add_action('login_head','antitor_wp'); // Runs in login head tag
+add_action('wp', 'antitor_detect'); // Runs before template loads
+add_action('login_head','antitor_detect'); // Runs in login head tag
 add_action('admin_menu', 'antitor_menu');
 add_action('admin_enqueue_scripts', 'antitor_scripts');
 
@@ -54,9 +46,7 @@ function uninstall_antitor() {
 	// Options array
 	$options = array(
 		"at_block",
-		"at_filename",
 		"at_block_count",
-		"at_last_updated",
 		"at_message"
 	);
 	// For each option in array
@@ -69,51 +59,32 @@ function uninstall_antitor() {
 	}
 }
 
-function antitor_wp() {
-	// Check if file exists
-	if ( !file_exists(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME) ){
-		// File was not found, update list
-		update_tor_list();
-	} else {
-		if ( !ANTITOR_LAST_UPDATE ){
-			// Option was not set, update the list
-			update_tor_list();
-		} else {
-			// Check that 1 hour has passt from the last update
-			if ( ANTITOR_LAST_UPDATE + 3599 < time() ) {
-				update_tor_list(); // Update the list
-			}
-		}
-	}
-	$BLOCK = get_option("at_block");
-	// Convert lines of file to array
-	$IPS = @file(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME, FILE_IGNORE_NEW_LINES);
-	// Validate conversion
-	if ( is_array($IPS) ) {
-		// Check if current ip is in list
-		if( in_array(ANTITOR_USER_IP, $IPS) ) {
-			// TOR WAS DETECTED
-			if ( $BLOCK == true ) { // Check if need to block
-				if ( !ANTITOR_BLOCKED_COUNT ) {
-					update_option("at_block_count", 1); // Init the block count
-				} else {
-					update_option("at_block_count", ANTITOR_BLOCKED_COUNT + 1 ); // Add 1 to count
-				}
-				// TOR USER WAS BLOCKED
-				die( stripslashes( get_option("at_message") ) );
-			}
-		}
-	}
+/* Check if TOR exit node */
+function is_tor_exit_point(){
+	$URL = reverse_ipoctets( $_SERVER['REMOTE_ADDR'] ) . "." . $_SERVER['SERVER_PORT'] . "." . reverse_ipoctets( $_SERVER['SERVER_ADDR'] );
+    // Check if host name is 127.0.0.2 = Tor exit node
+    return ( gethostbyname( $URL . ".ip-port.exitlist.torproject.org" ) == "127.0.0.2" );
 }
 
-function update_tor_list() {
-	// Get Tor ip list
-	$list = @file_get_contents( "http://localhoster.org/torlist/" );
-	if ( !strstr($list,'can only') ) { // Validate response
-		// Save new ips list
-		@file_put_contents(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME, $list);
-		// Update timestamp
-		update_option("at_last_updated",time());
+/* Reverse IP order */
+function reverse_ipoctets( $input_ip ) {
+    $ipoc = explode(".",$input_ip);
+    return $ipoc[3] . "." . $ipoc[2] . "." . $ipoc[1] . "." . $ipoc[0];
+}
+
+function antitor_detect() {
+	$BLOCK = get_option("at_block");
+	if ( is_tor_exit_point() ) {
+		// TOR WAS DETECTED
+		if ( $BLOCK == true ) { // Check if need to block
+			if ( !ANTITOR_BLOCKED_COUNT ) {
+				update_option("at_block_count", 1); // Init the block count
+			} else {
+				update_option("at_block_count", ANTITOR_BLOCKED_COUNT + 1 ); // Add 1 to count
+			}
+			// TOR USER WAS BLOCKED
+			die( stripslashes( get_option("at_message") ) );
+		}
 	}
 }
 
@@ -125,10 +96,11 @@ function antitor_menu() {
 }
 
 function antitor_scripts() {
-	/* Register */
+	/* Register scripts */
 	wp_register_script('at-panel-js', plugins_url('panel.js', __FILE__));
-	/* Enqueue */ 
+	/* Enqueue scripts */ 
 	wp_enqueue_script('at-panel-js');
+	/* Enqueue style */
 	wp_enqueue_style('at-panel-css',plugins_url('panel.css', __FILE__));
 }
 
@@ -140,28 +112,6 @@ function help_tab () {
         'title'	=> __('Protect Your Website.'), // TAB TITLE
         'content'	=> '<p>' . __( 'Tor is a great tool, but the anonymity it offers also attracts a lot of bad people.<br />Using this plugin you will be able to fully detect & restrict any Tor activity on your website.<br />If you have any questions or feedback you can contact me at <a href="mailto:ronmasas@gmail.com">ronmasas@gmail.com</a>' ) . '</p>', // CONTENT
     ) );
-}
-
-/* Get "time ago" from timestamp */
-function time_elapsed_string( $ptime ) {
-    $etime = time() - $ptime;
-    if ( $etime < 1 ){
-        return '0 seconds';
-    }
-    $a = array( 12 * 30 * 24 * 60 * 60  =>  'year',
-                30 * 24 * 60 * 60       =>  'month',
-                24 * 60 * 60            =>  'day',
-                60 * 60                 =>  'hour',
-                60                      =>  'minute',
-                1                       =>  'second'
-                );
-    foreach ( $a as $secs => $str ){
-        $d = $etime / $secs;
-        if ( $d >= 1 ) {
-            $r = round( $d );
-            return $r . ' ' . $str . ($r > 1 ? 's' : '') . ' ago';
-        }
-    }
 }
 
 function antitor_panel() {

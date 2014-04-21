@@ -38,13 +38,6 @@ $block = get_option("at_block");
 	?>
 	<div class="tool-box">
 		<form action="" method="POST">
-			<?php
-			if ( ANTITOR_LAST_UPDATE ) {
-			?>
-			<p class="description">IP list was successfully updated <?php echo time_elapsed_string( ANTITOR_LAST_UPDATE ); ?></p>
-			<?php 
-			}
-			?>
 			<label for="at_block" id="at_block_holder">
 				<input name="at_block" type="checkbox" id="at_block" value="1"
 				<?php
