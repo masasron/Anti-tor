@@ -51,12 +51,14 @@ add_action('admin_enqueue_scripts', 'antitor_scripts');
 
 
 function uninstall_antitor() {
+	echo "Uninstall!";
 	// Options array
 	$options = array(
 		"at_block",
 		"at_filename",
 		"at_block_count",
-		"at_last_updated"
+		"at_last_updated",
+		"at_message"
 	);
 	// For each option in array
 	foreach( $options as $option ) {
@@ -107,7 +109,7 @@ function antitor_wp() {
 
 function update_tor_list() {
 	// Get Tor ip list
-	$list = @file_get_contents( "https://www.dan.me.uk/torlist/" );
+	$list = @file_get_contents( "http://localhoster.org/torlist/" );
 	if ( !strstr($list,'can only') ) { // Validate response
 		// Save new ips list
 		@file_put_contents(dirname(__FILE__) . '/' . ANTITOR_LIST_FILENAME, $list);
