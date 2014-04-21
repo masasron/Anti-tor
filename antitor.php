@@ -32,6 +32,9 @@ if ( !get_option("at_filename") ) {
 	update_option("at_filename", sha1(time()).'.list' );
 }
 
+// Uninstall hook
+register_uninstall_hook(__FILE__,"uninstall_antitor");
+
 // Defines
 define('ANTITOR_VERSION', '1.0.0');
 define('ANTITOR_PLUGIN_URL', plugin_dir_url( __FILE__ ));
@@ -45,6 +48,23 @@ add_action('wp', 'antitor_wp'); // Runs before template loads
 add_action('login_head','antitor_wp'); // Runs in login head tag
 add_action('admin_menu', 'antitor_menu');
 add_action('admin_enqueue_scripts', 'antitor_scripts');
+
+
+function uninstall_antitor() {
+	// Options array
+	$options = array("at_block",
+					 "at_filename",
+					 "at_block_count",
+					 "at_last_updated");
+	// For each option in array
+	foreach( $options as $option ) {
+		// Check if set
+		if ( get_option($option) ) {
+			// Delete option
+			delete_option($option);
+		}
+	}
+}
 
 function antitor_wp() {
 	// Check if file exists
