@@ -18,8 +18,10 @@ Using this plugin you will be able to fully detect & restrict any Tor activity o
 Features
  
 1. Detect & restrict any Tor activity on your website
-2. Easy off on switch
-3. Show the number of blocked attempts
+1. Easy off on switch
+1. Show the number of blocked attempts
+
+( The plugin use the public TorDNSEL service to in order to decide whether the user is a Tor user)
 
 == Installation ==
 
