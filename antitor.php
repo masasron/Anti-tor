@@ -51,7 +51,6 @@ add_action('admin_enqueue_scripts', 'antitor_scripts');
 
 
 function uninstall_antitor() {
-	echo "Uninstall!";
 	// Options array
 	$options = array(
 		"at_block",
