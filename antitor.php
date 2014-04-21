@@ -166,7 +166,7 @@ function time_elapsed_string( $ptime ) {
 }
 
 function antitor_panel() {
-	/* Anti Tor Panel */
+	// Include the admin panel
 	require_once "panel.php";
 }
 
