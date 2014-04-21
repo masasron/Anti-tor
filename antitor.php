@@ -1,7 +1,5 @@
 <?php
-/**
- * @package AntiTor
- */
+
 /*
 Plugin Name: AntiTor
 Plugin URI: http://ronmasas.com/antitor
