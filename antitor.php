@@ -52,10 +52,12 @@ add_action('admin_enqueue_scripts', 'antitor_scripts');
 
 function uninstall_antitor() {
 	// Options array
-	$options = array("at_block",
-					 "at_filename",
-					 "at_block_count",
-					 "at_last_updated");
+	$options = array(
+		"at_block",
+		"at_filename",
+		"at_block_count",
+		"at_last_updated"
+	);
 	// For each option in array
 	foreach( $options as $option ) {
 		// Check if set
