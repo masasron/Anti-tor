@@ -21,11 +21,6 @@ Features
 2. Easy off on switch
 3. Show the number of blocked attempts
 
-How it works?
-Anti Tor is frequently pulling a list with all the `Tor nodes` IP addresses, with this information it can
-construct a good black list for Tor users.
-(The plugin send requests to my server http://localhoster.org every half an hour, in order update your site black list.)
-
 == Installation ==
 
 1. Upload `antitor` folder to the `/wp-content/plugins/` directory
