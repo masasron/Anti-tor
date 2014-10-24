@@ -9,11 +9,6 @@ Tor is a great tool, but the anonymity it offers also attracts a lot of bad peop
 * Easy off on switch
 * Show the number of blocked attempts
 
-#### How it works?
-Anti Tor is frequently pulling a list with all the `Tor nodes` IP addresses, with this information it can
-construct a good black list for Tor users.
-(The plugin send requests to my server http://localhoster.org every half an hour, in order update your site black list.)
-
 ---
 
 ### Installation
