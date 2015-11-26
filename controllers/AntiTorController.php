@@ -57,7 +57,7 @@ class AntiTorController extends Controller
     {
         if (isset($this->server['HTTP_CF_CONNECTING_IP']))
         {
-            //return $this->server['HTTP_CF_CONNECTING_IP'];
+            return $this->server['HTTP_CF_CONNECTING_IP'];
         }
         return $this->server['REMOTE_ADDR'];
     }
