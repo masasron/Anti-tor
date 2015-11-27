@@ -1,9 +1,5 @@
 <?php
 
-/*
- * Test Controller Logic
- */
-
 class AntiTorController extends Controller
 {
 
@@ -41,10 +37,10 @@ class AntiTorController extends Controller
     private function isTorExitNode()
     {
         $serverPort = $this->server['SERVER_PORT'];
-        $ipoctets = $this->reverseIp($this->getClientIp());
+        $remoteAddr = $this->reverseIp($this->getClientIp());
         $serverAddr = $this->reverseIp($this->server['SERVER_ADDR']);
         $placeholders = '%s.%s.%s.ip-port.exitlist.torproject.org';
-        $name = sprintf($placeholders, $ipoctets, $serverPort, $serverAddr);
+        $name = sprintf($placeholders, $remoteAddr, $serverPort, $serverAddr);
         return ( gethostbyname($name) === '127.0.0.2' );
     }
 
