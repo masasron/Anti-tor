@@ -43,7 +43,6 @@ class AntiTorController extends Controller
         $serverPort = $this->server['SERVER_PORT'];
         $ipoctets = $this->reverseIp($this->getClientIp());
         $serverAddr = $this->reverseIp($this->server['SERVER_ADDR']);
-
         $placeholders = '%s.%s.%s.ip-port.exitlist.torproject.org';
         $name = sprintf($placeholders, $ipoctets, $serverPort, $serverAddr);
         return ( gethostbyname($name) === '127.0.0.2' );
