@@ -23,7 +23,6 @@ class AntiTorController extends Controller
 
         // Update blocked count
         $count = intval(get_option('anti_tor_blocked_count'));
-        $count++;
         update_option('anti_tor_blocked_count', $count++);
 
         // Tor user was detected, block access.
